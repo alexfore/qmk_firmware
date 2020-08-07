@@ -36,3 +36,5 @@ AUTO_SHIFT_ENABLE = no      # Auto Shift
 RGB_MATRIX_ENABLE = custom
 
 LAYOUTS = 65_ansi_blocker
+
+TAP_DANCE_ENABLE = yes
