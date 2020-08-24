@@ -8,12 +8,61 @@
 
 #define KC_ESCC MT(MOD_LCTL, KC_ESC)
 
-enum custom_keycodes {
+uint8_t prev = _QWERTY;
+uint32_t desired = 1;
+uint16_t hue = 85;
+uint16_t sat = 255;
+uint16_t val = 10;
+
+enum custm_keycodes {
   QWERTY = SAFE_RANGE,
   LOWER,
   RAISE,
   ADJUST,
 };
+
+void get_hsv(void) {
+    hue = rgblight_get_hue();
+    sat = rgblight_get_sat();
+    val = rgblight_get_val();
+}
+
+void reset_hsv(void) {
+    rgblight_sethsv(hue, sat, val);
+}
+
+void matrix_init_user() {
+    rgblight_mode(desired);
+    rgblight_enable();
+    reset_hsv();
+}
+
+uint32_t layer_state_set_user(uint32_t state) {
+  uint8_t layer = biton32(state);
+      switch (layer) {
+        case _QWERTY:
+          rgblight_mode(1);
+          reset_hsv();
+          break;
+
+        case _LOWER:
+          rgblight_mode(5);
+          rgblight_sethsv(28, 255, 100);
+          break;
+
+        case _RAISE:
+          rgblight_mode(23);
+          rgblight_sethsv(213, 255, 100);
+          break;
+
+        case _ADJUST:
+          rgblight_mode(5);
+          rgblight_sethsv(128, 255, 100);
+          break;
+      }
+  prev = layer;
+  return state;
+}
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -25,7 +74,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      KC_ESCC, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                               KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    _______,          KC_DEL,  KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSFT,
+     KC_LSPO, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_POWER,          KC_DEL, KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSPC,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                     KC_LCMD, LOWER,   KC_ENT,                    KC_SPC,  RAISE,   KC_RALT
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
@@ -33,13 +82,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_LOWER] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,                            KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_HOME,
+     KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,                            KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_DEL,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     RESET,   KC_1,    KC_2,    KC_3,    KC_4,    KC_LPRN,                            KC_RPRN,   KC_7,    KC_8,    KC_9,    KC_0,    KC_END,
+     KC_TAB,   KC_1,    KC_2,    KC_3,    KC_4,    KC_LPRN,                            KC_RPRN,   KC_7,    KC_8,    KC_9,    KC_0,  KC_PGUP,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
-     KC_DEL,  _______, KC_LEFT, KC_RGHT, KC_UP,   KC_LBRC,                            KC_RBRC, KC_P4,   KC_P5,   KC_P6,   KC_PLUS, KC_PGUP,
+     KC_ESCC, _______, KC_LEFT, KC_RGHT, KC_UP,   KC_LBRC,                            KC_RBRC, KC_EQUAL, KC_PLUS, KC_P6,    KC_UP,  KC_PGDN,
   //├────────┼────────┼────────┼────────┼────────┼────────┼────────┐        ┌────────┼────────┼────────┼────────┼────────┼────────┼────────┤
-     BL_STEP, _______, _______, _______, KC_DOWN, KC_LCBR, _______,          KC_RPRN, KC_RCBR, KC_P1,   KC_P2,   KC_P3,   KC_MINS, KC_PGDN,
+     KC_LSFT, _______, _______, _______, KC_DOWN, KC_LCBR, _______,          KC_RPRN, KC_RCBR, KC_MINUS, KC_UNDS, KC_LEFT,  KC_DOWN, KC_RGHT,
   //└────────┴────────┴────────┴───┬────┴───┬────┴───┬────┴───┬────┘        └───┬────┴───┬────┴───┬────┴───┬────┴────────┴────────┴────────┘
                                     _______, _______, KC_DEL,                    KC_DEL,  _______, KC_P0
                                 // └────────┴────────┴────────┘                 └────────┴────────┴────────┘
@@ -61,7 +110,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [_ADJUST] = LAYOUT(
   //┌────────┬────────┬────────┬────────┬────────┬────────┐                          ┌────────┬────────┬────────┬────────┬────────┬────────┐
-     _______, _______, _______, _______, _______, _______,                            _______, _______, _______, _______, _______, _______,
+     _______, _______, _______, _______, _______, _______,                            _______, _______, _______, _______, _______, RESET,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
      _______, _______, _______, _______, _______, _______,                            _______, _______, _______, _______, _______, _______,
   //├────────┼────────┼────────┼────────┼────────┼────────┤                          ├────────┼────────┼────────┼────────┼────────┼────────┤
@@ -117,16 +166,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 void encoder_update_user(uint8_t index, bool clockwise) {
     if (index == 0) {
         if (clockwise) {
-            tap_code(KC_PGDN);
-        } else {
             tap_code(KC_PGUP);
-        }
-    }
-    else if (index == 1) {
-        if (clockwise) {
-            tap_code(KC_VOLU);
         } else {
-            tap_code(KC_VOLD);
+            tap_code(KC_PGDN);
         }
     }
 }
