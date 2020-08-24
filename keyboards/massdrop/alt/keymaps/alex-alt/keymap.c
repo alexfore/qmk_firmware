@@ -1,6 +1,16 @@
 #include QMK_KEYBOARD_H
 
+#define _QWERTY 0
+#define _LOWER 1
+#define _RAISE 2
+#define _ADJUST 3
+
+#define KC_ESCC MT(MOD_LCTL, KC_ESC)
+
 enum alt_keycodes {
+    LOWER,
+    RAISE,
+    ADJUST,
     U_T_AUTO = SAFE_RANGE, //USB Extra Port Toggle Auto Detect / Always Active
     U_T_AGCR,              //USB Toggle Automatic GCR control
     DBG_TOG,               //DEBUG Toggle On / Off
@@ -22,34 +32,97 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 };
 
 
+
+
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    [0] = LAYOUT_65_ansi_blocker(
-        KC_GESC, KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC, KC_DEL,  \
+    [_QWERTY] = LAYOUT_65_ansi_blocker(
+        KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC, KC_DEL,  \
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_LBRC, KC_RBRC, KC_BSLS, KC_HOME, \
-        TD(CTRL),KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,  KC_PGUP, \
+        KC_ESCC, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,          KC_ENT,  KC_PGUP, \
         KC_LSPO, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSPC,          KC_UP,   KC_PGDN, \
-        KC_LCTL, KC_LALT, KC_LGUI,                            KC_SPC,                             KC_RGUI, MO(1),   KC_LEFT, KC_DOWN, KC_RGHT  \
+        RAISE,   KC_LALT, KC_LGUI,                            KC_SPC,                             KC_RGUI, LOWER,   KC_LEFT, KC_DOWN, KC_RGHT  \
     ),
-    [1] = LAYOUT_65_ansi_blocker(
+    [_LOWER] = LAYOUT_65_ansi_blocker(
         KC_GRV,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  _______, KC_MUTE, \
-        _______, RGB_SPD, RGB_VAI, RGB_SPI, RGB_HUI, RGB_SAI, _______, U_T_AUTO,U_T_AGCR,_______, KC_PSCR, KC_SLCK, KC_PAUS, _______, KC_END, \
+        _______, RGB_SPD, RGB_VAI, RGB_SPI, RGB_HUI, RGB_SAI, _______, U_T_AUTO,U_T_AGCR,_______, KC_PSCR, KC_SLCK, KC_PAUS, _______, KC_END,  \
         _______, RGB_RMOD,RGB_VAD, RGB_MOD, RGB_HUD, RGB_SAD, _______, _______, _______, _______, _______, _______,          _______, KC_VOLU, \
         _______, RGB_TOG, _______, _______, _______, MD_BOOT, NK_TOGG, DBG_TOG, _______, _______, _______, _______,          KC_PGUP, KC_VOLD, \
-        _______, _______, _______,                            _______,                            _______, _______, KC_HOME, KC_PGDN, KC_END  \
+        _______, _______, _______,                            _______,                            _______, _______, KC_HOME, KC_PGDN, KC_END   \
     ),
-    /*
-    [X] = LAYOUT(
-        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
+    [_RAISE] = LAYOUT(
+        _______, _______, _______, _______, _______, _______, _______, KC_7,    KC_8,    KC_9,    KC_SLSH, _______, _______, _______, _______, \
+        _______, _______, _______, _______, _______, _______, _______, KC_4,    KC_5,    KC_6,    KC_ASTR, _______, _______, _______, KC_END,  \
+        _______, _______, _______, _______, _______, _______, _______, KC_1,    KC_2,    KC_3,    KC_MINS, _______,          _______, _______, \
+        _______, _______, _______, _______, _______, _______, _______, KC_0,    _______, _______, KC_PLUS, _______,          _______, _______, \
+        _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______  \
+    ),
+    [_ADJUST] = LAYOUT(
+        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_SLEP, \
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, \
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, _______, \
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,          _______, _______, \
         _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______  \
     ),
-    */
 };
+
+// uint8_t curr_rgb_mode;
+// uint8_t curr_rgb_hue;
+// uint8_t curr_rgb_sat;
+// uint8_t curr_rgb_val;
+// uint8_t last_mode = 0;
+//
+// void get_rgb_state(void) {
+//     curr_rgb_mode = rgb_matrix_get_mode();
+//     curr_rgb_hue = rgb_matrix_get_hue();
+//     curr_rgb_sat = rgb_matrix_get_sat();
+//     curr_rgb_val = rgb_matrix_get_val();
+// }
+//
+// void set_rgb_state(void) {
+//     rgb_matrix_mode(curr_rgb_mode);
+//     rgb_matrix_sethsv(curr_rgb_hue, curr_rgb_sat, curr_rgb_val);
+// }
+//
+// // This runs code every time that the layers get changed
+// layer_state_t layer_state_set_user(layer_state_t state) {
+//     switch (get_highest_layer(state)) {
+//         case _QWERTY:
+//             // do stuff...
+//             if(last_mode != _LOWER)
+//                 set_rgb_state();
+//             last_mode = _QWERTY;
+//             break;
+//         case _LOWER:
+//             // do stuff...
+//             get_rgb_state();
+//             last_mode = _LOWER;
+//             break;
+//         case _RAISE:
+//             // do stuff...
+//             if(last_mode != _QWERTY)
+//                 get_rgb_state();
+//             rgb_matrix_mode_noeeprom(5);
+//             rgb_matrix_sethsv_noeeprom(213, 255, 100);
+//             last_mode = _RAISE;
+//             break;
+//         case _ADJUST:
+//             // do stuff...
+//             if(last_mode != _QWERTY)
+//                 get_rgb_state();
+//             rgb_matrix_mode_noeeprom(5);
+//             rgb_matrix_sethsv_noeeprom(128, 255, 100);
+//             last_mode = _ADJUST;
+//             break;
+//     }
+//     return state;
+// }
+
 
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
+    rgb_matrix_set_flags(LED_FLAG_KEYLIGHT);
+    rgb_matrix_mode_noeeprom(1);
+    rgb_matrix_sethsv_noeeprom(213, 255, 150);
 };
 
 // Runs constantly in the background, in a loop.
@@ -64,13 +137,37 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     static uint32_t key_timer;
 
     switch (keycode) {
+        case LOWER:
+            if (record->event.pressed) {
+                layer_on(_LOWER);
+                update_tri_layer(_LOWER, _RAISE, _ADJUST);
+            } else {
+                layer_off(_LOWER);
+                update_tri_layer(_LOWER, _RAISE, _ADJUST);
+            }
+            return false;
+        case RAISE:
+        if (record->event.pressed) {
+                layer_on(_RAISE);
+                update_tri_layer(_LOWER, _RAISE, _ADJUST);
+            } else {
+                layer_off(_RAISE);
+                update_tri_layer(_LOWER, _RAISE, _ADJUST);
+            }
+            return false;
+        case ADJUST:
+            if (record->event.pressed) {
+                layer_on(_ADJUST);
+            } else {
+                layer_off(_ADJUST);
+            }
+            return false;
         case U_T_AUTO:
             if (record->event.pressed && MODS_SHIFT && MODS_CTRL) {
                 TOGGLE_FLAG_AND_PRINT(usb_extra_manual, "USB extra port manual mode");
             }
             return false;
-        case U_T_AGCR:
-            if (record->event.pressed && MODS_SHIFT && MODS_CTRL) {
+        case U_T_AGCR:            if (record->event.pressed && MODS_SHIFT && MODS_CTRL) {
                 TOGGLE_FLAG_AND_PRINT(usb_gcr_auto, "USB GCR auto mode");
             }
             return false;
