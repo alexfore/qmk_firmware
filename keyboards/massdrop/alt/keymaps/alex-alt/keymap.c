@@ -7,6 +7,8 @@
 
 #define KC_ESCC MT(MOD_LCTL, KC_ESC)
 
+uint8_t prev = _QWERTY;
+
 enum alt_keycodes {
     LOWER,
     RAISE,
@@ -32,8 +34,6 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 };
 
 
-
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_QWERTY] = LAYOUT_65_ansi_blocker(
         KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_MINS, KC_EQL,  KC_BSPC, KC_DEL,  \
@@ -53,8 +53,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _______, _______, _______, _______, _______, _______, _______, KC_7,    KC_8,    KC_9,    KC_SLSH, _______, _______, _______, _______, \
         _______, _______, _______, _______, _______, _______, _______, KC_4,    KC_5,    KC_6,    KC_ASTR, _______, _______, _______, KC_END,  \
         _______, _______, _______, _______, _______, _______, _______, KC_1,    KC_2,    KC_3,    KC_MINS, _______,          _______, _______, \
-        _______, _______, _______, _______, _______, _______, _______, KC_0,    _______, _______, KC_PLUS, _______,          _______, _______, \
-        _______, _______, _______,                            _______,                            _______, _______, _______, _______, _______  \
+        _______, _______, _______, _______, _______, _______, _______, KC_0,    _______, _______, KC_PLUS, _______,          KC_PGUP, _______, \
+        _______, _______, _______,                            _______,                            _______, _______, KC_HOME, KC_PGDN, KC_END   \
     ),
     [_ADJUST] = LAYOUT(
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_SLEP, \
@@ -65,61 +65,32 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     ),
 };
 
-// uint8_t curr_rgb_mode;
-// uint8_t curr_rgb_hue;
-// uint8_t curr_rgb_sat;
-// uint8_t curr_rgb_val;
-// uint8_t last_mode = 0;
-//
-// void get_rgb_state(void) {
-//     curr_rgb_mode = rgb_matrix_get_mode();
-//     curr_rgb_hue = rgb_matrix_get_hue();
-//     curr_rgb_sat = rgb_matrix_get_sat();
-//     curr_rgb_val = rgb_matrix_get_val();
-// }
-//
-// void set_rgb_state(void) {
-//     rgb_matrix_mode(curr_rgb_mode);
-//     rgb_matrix_sethsv(curr_rgb_hue, curr_rgb_sat, curr_rgb_val);
-// }
-//
-// // This runs code every time that the layers get changed
-// layer_state_t layer_state_set_user(layer_state_t state) {
-//     switch (get_highest_layer(state)) {
-//         case _QWERTY:
-//             // do stuff...
-//             if(last_mode != _LOWER)
-//                 set_rgb_state();
-//             last_mode = _QWERTY;
-//             break;
-//         case _LOWER:
-//             // do stuff...
-//             get_rgb_state();
-//             last_mode = _LOWER;
-//             break;
-//         case _RAISE:
-//             // do stuff...
-//             if(last_mode != _QWERTY)
-//                 get_rgb_state();
-//             rgb_matrix_mode_noeeprom(5);
-//             rgb_matrix_sethsv_noeeprom(213, 255, 100);
-//             last_mode = _RAISE;
-//             break;
-//         case _ADJUST:
-//             // do stuff...
-//             if(last_mode != _QWERTY)
-//                 get_rgb_state();
-//             rgb_matrix_mode_noeeprom(5);
-//             rgb_matrix_sethsv_noeeprom(128, 255, 100);
-//             last_mode = _ADJUST;
-//             break;
-//     }
-//     return state;
-// }
-
+// This runs code every time that the layers get changed
+layer_state_t layer_state_set_user(layer_state_t state) {
+    uint8_t layer = biton32(state);
+    switch (biton32(state)) {
+        case _QWERTY:
+            rgb_matrix_sethsv_noeeprom(213, 255, 150);
+            break;
+        case _LOWER:
+            rgb_matrix_sethsv_noeeprom(100, 255, 250);
+            break;
+        case _RAISE:
+            rgb_matrix_sethsv_noeeprom(50, 255, 250);
+            break;
+        case _ADJUST:
+            rgb_matrix_sethsv_noeeprom(0, 255, 255);
+            break;
+    }
+    prev = layer;
+    return state;
+}
 
 // Runs just one time when the keyboard initializes.
 void matrix_init_user(void) {
+};
+
+void keyboard_post_init_user(void) {
     rgb_matrix_set_flags(LED_FLAG_KEYLIGHT);
     rgb_matrix_mode_noeeprom(1);
     rgb_matrix_sethsv_noeeprom(213, 255, 150);
